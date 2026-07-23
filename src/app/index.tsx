@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import {
     Dimensions,
     SafeAreaView,
@@ -61,14 +61,13 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Botón Principal */}
-        <TouchableOpacity
-          style={styles.primaryButton}
-          activeOpacity={0.8}
-          onPress={() => router.push('/game')}
-        >
-          <Text style={styles.primaryButtonText}>¡Jugar Ahora!</Text>
+
+
+        <Link href="/game" asChild>
+        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
+            <Text style={styles.primaryButtonText}>¡Jugar Ahora!</Text>
         </TouchableOpacity>
+        </Link>
 
         {/* Footer */}
         <View style={styles.footer}>
