@@ -1,98 +1,184 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import {
+    Dimensions,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+// Puntos de corte para adaptar según la pantalla
+const IS_TABLET = SCREEN_WIDTH >= 768;
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Insignia / Badge Superior */}
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>MENTE & LÓGICA</Text>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {/* Encabezado */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Sopa de Letras</Text>
+          <Text style={styles.subtitle}>
+            Encuentra las palabras ocultas en el menor tiempo posible.
+          </Text>
+        </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        {/* Tablero Decorativo */}
+        <View style={styles.previewContainer}>
+          <View style={styles.previewRow}>
+            {['S', 'O', 'P', 'A'].map((letter, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.previewCell,
+                  (i === 0 || i === 3) && styles.previewCellActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.previewCellText,
+                    (i === 0 || i === 3) && styles.previewCellTextActive,
+                  ]}
+                >
+                  {letter}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        {/* Botón Principal */}
+        <TouchableOpacity
+          style={styles.primaryButton}
+          activeOpacity={0.8}
+          onPress={() => router.push('/game')}
+        >
+          <Text style={styles.primaryButtonText}>¡Jugar Ahora!</Text>
+        </TouchableOpacity>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>v1.0.0 • Creado con React Native</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
+  scrollContent: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    paddingHorizontal: SCREEN_WIDTH * 0.08,
+    paddingVertical: 24,
+  },
+  badge: {
+    backgroundColor: '#e7f5ff',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 16,
+  },
+  badgeText: {
+    color: '#1c7ed6',
+    fontWeight: '700',
+    fontSize: IS_TABLET ? 16 : 12,
+    letterSpacing: 1,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: IS_TABLET ? 40 : 28,
   },
   title: {
+    fontSize: IS_TABLET ? 48 : 32,
+    fontWeight: 'bold',
+    color: '#212529',
     textAlign: 'center',
+    marginBottom: 8,
   },
-  code: {
-    textTransform: 'uppercase',
+  subtitle: {
+    fontSize: IS_TABLET ? 20 : 15,
+    color: '#868e96',
+    textAlign: 'center',
+    maxWidth: IS_TABLET ? 500 : 280,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  previewContainer: {
+    backgroundColor: '#ffffff',
+    padding: IS_TABLET ? 20 : 12,
+    borderRadius: 16,
+    marginBottom: IS_TABLET ? 50 : 36,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+  previewRow: {
+    flexDirection: 'row',
+    gap: IS_TABLET ? 12 : 8,
+  },
+  previewCell: {
+    width: IS_TABLET ? 56 : 42,
+    height: IS_TABLET ? 56 : 42,
+    borderRadius: 10,
+    backgroundColor: '#f1f3f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewCellActive: {
+    backgroundColor: '#4c6ef5',
+  },
+  previewCellText: {
+    fontSize: IS_TABLET ? 24 : 18,
+    fontWeight: 'bold',
+    color: '#495057',
+  },
+  previewCellTextActive: {
+    color: '#ffffff',
+  },
+  primaryButton: {
+    backgroundColor: '#228be6',
+    width: '100%',
+    maxWidth: IS_TABLET ? 400 : 280,
+    height: IS_TABLET ? 64 : 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#228be6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+    fontSize: IS_TABLET ? 22 : 18,
+    fontWeight: 'bold',
+  },
+  footer: {
+    marginTop: IS_TABLET ? 48 : 32,
+  },
+  footerText: {
+    fontSize: IS_TABLET ? 14 : 12,
+    color: '#adb5bd',
   },
 });
