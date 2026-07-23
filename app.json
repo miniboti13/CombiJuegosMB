@@ -21,6 +21,7 @@
     },
     "web": {
       "output": "static",
+      "baseUrl": "/CombiJuegosMB",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
